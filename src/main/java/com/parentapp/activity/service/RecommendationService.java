@@ -4,6 +4,10 @@ import com.parentapp.activity.entity.*;
 import com.parentapp.activity.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.parentapp.activity.ai.AiEngine;
+import com.parentapp.activity.ai.RuleBasedAiEngine;
+import com.parentapp.activity.ai.ThumbLlmAiEngine;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -15,6 +19,11 @@ public class RecommendationService {
     private final DailyActivityLogRepository dailyLogRepo;
     private final ActivityRepository activityRepo;
     private final AiSuggestionRepository aiSuggestionRepo;
+    private final RuleBasedAiEngine ruleEngine;
+    private final ThumbLlmAiEngine thumbEngine;
+
+    @Value("${ai.mode}")
+    private String aiMode;
 
     public AiSuggestionEntity generateSuggestionForChild(Long childId) {
 
@@ -55,7 +64,13 @@ public class RecommendationService {
             throw new RuntimeException("No activities found in system. Please seed activity table first.");
         }
 
-        ActivityEntity chosen = pool.get(new Random().nextInt(pool.size()));
+        ActivityEntity chosen;
+
+        if ("thumb".equalsIgnoreCase(aiMode)) {
+            chosen = thumbEngine.chooseActivity(childId, pool, categoryCount.toString());
+        } else {
+            chosen = ruleEngine.chooseActivity(childId, pool, categoryCount.toString());
+        }
 
         AiSuggestionEntity suggestion = AiSuggestionEntity.builder()
                 .child(
