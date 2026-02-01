@@ -35,3 +35,5 @@ build/
 *.env
 src\main\resources\firebase-admin.json
 parent-child-activity-app-firebase-adminsdk-fbsvc-609bc68577.json
+ src/main/resources/parent-child-activity-app-firebase-adminsdk-fbsvc-609bc68577.json
+ src/main/resources/firebase-admin.json
