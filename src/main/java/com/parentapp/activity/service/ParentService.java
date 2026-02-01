@@ -14,4 +14,15 @@ public class ParentService {
     public ParentEntity createParent(ParentEntity parent) {
         return parentRepository.save(parent);
     }
+
+    // ✅ MOVE THIS INSIDE CLASS
+    public void updateDeviceToken(Long parentId, String token) {
+
+        ParentEntity parent = parentRepository.findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent not found"));
+
+        parent.setDeviceToken(token);
+
+        parentRepository.save(parent);
+    }
 }

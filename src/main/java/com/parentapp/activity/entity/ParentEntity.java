@@ -27,4 +27,8 @@ public class ParentEntity {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "device_token")
+    private String deviceToken;
+
 }

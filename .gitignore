@@ -33,3 +33,4 @@ build/
 .vscode/
 *.log
 *.env
+src\main\resources\firebase-admin.json
