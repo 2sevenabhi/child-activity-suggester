@@ -5,31 +5,35 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseConfig {
 
     @PostConstruct
     public void init() {
-
         try {
 
-            InputStream serviceAccount = new ClassPathResource("firebase-admin.json").getInputStream();
+            String firebaseJson = System.getenv("FIREBASE_CONFIG_JSON");
+
+            if (firebaseJson == null || firebaseJson.isEmpty()) {
+                throw new RuntimeException("FIREBASE_CONFIG_JSON env variable not set");
+            }
+
+            GoogleCredentials credentials = GoogleCredentials.fromStream(
+                    new ByteArrayInputStream(firebaseJson.getBytes(StandardCharsets.UTF_8)));
 
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(credentials)
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                System.out.println("🔥 Firebase initialized successfully!");
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Firebase initialization failed", e);
         }
     }
