@@ -18,11 +18,16 @@ public class ParentController {
         return parentService.createParent(parent);
     }
 
-    // 🔔 Save device token for push notifications
     @PostMapping("/{id}/device-token")
     public void saveDeviceToken(
             @PathVariable Long id,
             @RequestBody DeviceTokenRequest request) {
         parentService.updateDeviceToken(id, request.getToken());
+    }
+
+    // 🔐 LOGIN
+    @PostMapping("/login")
+    public ParentEntity login(@RequestBody ParentEntity parent) {
+        return parentService.login(parent.getEmail(), parent.getPassword());
     }
 }
